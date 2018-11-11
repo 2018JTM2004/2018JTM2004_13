@@ -6,11 +6,32 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h> //for read and write function
+void error(char *msg);
+int readsock(int sock,char buffer[]);
+int writesock(int sock, char buffer[]);
+void readstdin(char buffer[]);
 
-void error(char *msg)
-{
+void error(char *msg){
     perror(msg);
     exit(0);
+}
+int readsock(int sock,char buffer[]){
+  int n;
+  bzero(buffer,256);
+  n = read(sock,buffer,255);
+  if (n < 0) error("ERROR reading from socket");
+  return n;
+}
+void readstdin(char buffer[]){
+
+  bzero(buffer,256);
+  fgets(buffer,255,stdin);
+
+}
+int writesock(int sock, char buffer[]){
+  int n;
+  n = write(sock,buffer,strlen(buffer));if (n < 0) error("ERROR writing to socket");
+  return n;
 }
 
 int main(int argc, char *argv[])
@@ -43,27 +64,21 @@ int main(int argc, char *argv[])
     if (connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
         error("ERROR connecting");
 
+    //Username and Password Section
     printf("Username : ");
-    bzero(buffer,256);
-    fgets(buffer,255,stdin);
-    n = write(sockfd,buffer,strlen(buffer));
-
+    readstdin(buffer);
+    writesock(sockfd,buffer); //Username sent
     printf("Password : ");
-    bzero(buffer,256);
-    fgets(buffer,255,stdin);
-    n = write(sockfd,buffer,strlen(buffer)); if (n < 0) error("ERROR writing to socket");
+    readstdin(buffer);
+    writesock(sockfd,buffer); //Password sent
 
-    bzero(buffer,256);
-    n = read(sockfd,buffer,255); if (n < 0) error("ERROR reading from socket");
-    printf("%s\n",buffer);
+    readsock(sockfd,buffer);printf("%s\n",buffer);//Print successful login message.
 
-    bzero(buffer,256);
+
     printf("Input Query : ");
-    fgets(buffer,255,stdin);
-    n = write(sockfd,buffer,strlen(buffer)); if (n < 0) error("ERROR writing to socket");
-
-    bzero(buffer,256);
-    n = read(sockfd,buffer,255); if (n < 0) error("ERROR reading from socket");
+    readstdin(buffer);
+    writesock(sockfd,buffer); //Input Query sent
+    readsock(sockfd,buffer);
     printf("Processed Query : %s",buffer);
 
     return 0;

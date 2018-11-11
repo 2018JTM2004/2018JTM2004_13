@@ -14,10 +14,28 @@
 
 void dostuff(int); /* function prototype */
 void results(char *query);
+void reads(int sock,char buffer[]);
+void writes(int sock, char buffer[]);
+
 void error(char *msg)
 {
     perror(msg);
     exit(1);
+}
+
+void readsock(int sock,char buffer[]){
+  int n;
+  bzero(buffer,256);
+  n = read(sock,buffer,255);
+  if (n < 0) error("ERROR reading from socket");
+
+}
+
+void writes(int sock, char buffer[]){
+  int n;
+  n = write(sock,buffer,256);
+  if (n < 0) error("ERROR writing to socket");
+
 }
 
 int main(int argc, char *argv[])
@@ -75,20 +93,6 @@ void results(char s[]){
 
   // printf("%s\n", s);
 
-
-}
-void read(int sock,char buffer[]){
-
-  bzero(buffer,256);
-  n = read(sock,buffer,255);
-  if (n < 0) error("ERROR reading from socket");
-  
-}
-
-void write(int sock, char buffer[]){
-
-  n = write(sock,buffer,256);
-  if (n < 0) error("ERROR writing to socket");
 
 }
 void dostuff (int sock)
