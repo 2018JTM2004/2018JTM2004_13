@@ -1,9 +1,14 @@
-/* A simple server in the internet domain using TCP
-   The port number is passed as an argument
-   This version runs forever, forking off a separate
-   process for each connection
-   gcc server2.c -lsocket
+/* To run the server program
+* 1. make -B
+* 2. Example:  ./server.out 12345
 */
+
+/*
+* The program assumes a file nammed
+* user_pass exists with username and
+* password arranged in two columns.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +17,7 @@
 #include <netinet/in.h>
 #include <unistd.h> //for read and write function
 
-void dostuff(int); /* function prototype */
+void attend(int);
 void results(char *query);
 int readsock(int sock,char buffer[]);
 int writesock(int sock, char buffer[]);
@@ -58,27 +63,33 @@ int main(int argc, char *argv[])
      if (bind(sockfd, (struct sockaddr *) &serv_addr,
               sizeof(serv_addr)) < 0)
               error("ERROR on binding");
+    else{
+      printf("Socket Binded to Port : %d\n", portno);
+    }
      listen(sockfd,2);
+     printf("Listening for connections\n");
      clilen = sizeof(cli_addr);
      while (1) {
-         newsockfd = accept(sockfd,
-               (struct sockaddr *) &cli_addr, &clilen);
-         if (newsockfd < 0)
-             error("ERROR on accept");
+
+         // Accept new connection.
+         newsockfd = accept(sockfd,(struct sockaddr *) &cli_addr, &clilen);
+         if (newsockfd < 0) error("ERROR on accept");
          pid = fork();
-         if (pid < 0)
-             error("ERROR on fork");
+         if (pid < 0) error("ERROR on fork");
          if (pid == 0)  {
+             printf("Connection Accepted\n");
              close(sockfd);
-             dostuff(newsockfd);
+             attend(newsockfd);
              exit(0);
          }
          else close(newsockfd);
 
-     } /* end of while */
-     return 0; /* we never get here */
+     }
+     return 0;
 }
 void results(char s[]){
+
+//This function changes case of each character.
   int c = 0;
   char ch;
 
@@ -95,34 +106,38 @@ void results(char s[]){
 
 
 }
-void dostuff (int sock)
+void attend (int sock)
 {
    int n;
+   //Initialize array to hold username, password and other data.
    char buffer[256],username[256],password[256];
    char name[10],pass[10];
 
    auth:
+   //Read username from socket
    n = readsock(sock,username); username[n-1] = '\0';
    printf("Username provided : %s\n",username);
 
+   //Read password from socket
    n = readsock(sock,password); password[n-1] = '\0';
    printf("Password provided : %s\n",password);
 
 
    //Reading username and password from file user_pass
    FILE * fp = fopen("user_pass","r"); fscanf(fp, "%s %s",name,pass);
-   printf("%s %s\n",name,pass);
+   // printf("%s %s\n",name,pass);
 
+   // Compare username and password with Credentials from file.
    if (strcmp(username,name) == 0 && strcmp(password,pass) == 0 ){
 
      n = write(sock,"granted",strlen("granted")); if (n < 0) error("ERROR writing to socket");
-     printf("%s authenticated!\n",username);
-     char message[11]= "Logged In!"; writesock(sock,message);
+     printf("%s granted access!\n",username);
+
      while(1){
        readsock(sock,buffer); // Reading Input string from Client
        printf("%s : %s\n",username, buffer );
        results(buffer); //process the string
-       printf("Server : %s\n",buffer );
+       printf("server : %s\n",buffer );
        writesock(sock,buffer); //Processed string sent to client.
     }
    }

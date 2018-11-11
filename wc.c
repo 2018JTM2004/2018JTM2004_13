@@ -1,3 +1,12 @@
+/* To run the client program
+* first run
+* 1. make -B
+* 2. ./server.out 12345
+* 3. Example:  ./client.out anshuman 12345
+* Port no provided to client should be same
+* as given to server.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +24,7 @@ void error(char *msg){
     perror(msg);
     exit(0);
 }
+// function to read from socket
 int readsock(int sock,char buffer[]){
   int n;
   bzero(buffer,256);
@@ -22,12 +32,14 @@ int readsock(int sock,char buffer[]){
   if (n < 0) error("ERROR reading from socket");
   return n;
 }
+// function to read from standard Input
 void readstdin(char buffer[]){
 
   bzero(buffer,256);
   fgets(buffer,255,stdin);
 
 }
+// function to write into socket
 int writesock(int sock, char buffer[]){
   int n;
   n = write(sock,buffer,strlen(buffer));if (n < 0) error("ERROR writing to socket");
@@ -37,7 +49,7 @@ int writesock(int sock, char buffer[]){
 int main(int argc, char *argv[])
 {
     int sockfd, portno, n;
-
+    // Defining structs to store addresss
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
@@ -48,18 +60,19 @@ int main(int argc, char *argv[])
     }
     portno = atoi(argv[2]);
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
-        error("ERROR opening socket");
+    if (sockfd < 0) error("ERROR opening socket");
     server = gethostbyname(argv[1]);
+
     if (server == NULL) {
         fprintf(stderr,"ERROR, no such host\n");
         exit(0);
     }
+
     bzero((char *) &serv_addr, sizeof(serv_addr));
+
     serv_addr.sin_family = AF_INET;
-    bcopy((char *)server->h_addr,
-         (char *)&serv_addr.sin_addr.s_addr,
-         server->h_length);
+
+    bcopy((char *)server->h_addr,(char *)&serv_addr.sin_addr.s_addr,server->h_length);
     serv_addr.sin_port = htons(portno);
     if (connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
         error("ERROR connecting");
@@ -77,13 +90,19 @@ int main(int argc, char *argv[])
 
     if (strcmp(buffer,"granted") == 0){
 
-        readsock(sockfd,buffer);printf("%s\n",buffer);//Print successful login message.
-
         while (1) {
           printf("Input Query : ");
-          readstdin(buffer); writesock(sockfd,buffer); //Input Query sent
-          readsock(sockfd,buffer);
-          printf("Processed Query : %s",buffer);
+          readstdin(buffer);
+          buffer[strlen(buffer)-1]  = '\0';
+          writesock(sockfd,buffer); //Input Query sent
+          if (strcmp(buffer,"q") == 0){
+            break;
+          }
+          else {
+            readsock(sockfd,buffer);
+            printf("Processed Query : %s\n",buffer);
+          }
+
         }
 
     }
@@ -94,7 +113,7 @@ int main(int argc, char *argv[])
 
     }
     else{
-      printf("Something went terribly wrong. Restart Client and Server.\n" );
+      printf("Something went terribly wrong. Try restarting Client.\n" );
     }
 
     return 0;
