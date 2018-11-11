@@ -72,6 +72,9 @@ int main(int argc, char *argv[])
     readstdin(buffer);
     writesock(sockfd,buffer); //Password sent
 
+    readsock(sockfd,buffer);
+    printf("%s\n",buffer);
+    
     readsock(sockfd,buffer);printf("%s\n",buffer);//Print successful login message.
 
 

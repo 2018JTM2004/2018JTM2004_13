@@ -14,8 +14,8 @@
 
 void dostuff(int); /* function prototype */
 void results(char *query);
-void reads(int sock,char buffer[]);
-void writes(int sock, char buffer[]);
+int readsock(int sock,char buffer[]);
+int writesock(int sock, char buffer[]);
 
 void error(char *msg)
 {
@@ -23,19 +23,19 @@ void error(char *msg)
     exit(1);
 }
 
-void readsock(int sock,char buffer[]){
+int readsock(int sock,char buffer[]){
   int n;
   bzero(buffer,256);
-  n = read(sock,buffer,255);
+  n = read(sock,buffer,256);
   if (n < 0) error("ERROR reading from socket");
-
+  return n;
 }
 
-void writes(int sock, char buffer[]){
+int writesock(int sock, char buffer[]){
   int n;
-  n = write(sock,buffer,256);
+  n = write(sock,buffer,strlen(buffer));
   if (n < 0) error("ERROR writing to socket");
-
+  return n;
 }
 
 int main(int argc, char *argv[])
@@ -100,44 +100,36 @@ void dostuff (int sock)
    int n;
    char buffer[256],username[256],password[256];
    char name[10],pass[10];
-   bzero(buffer,256);
 
-   bzero(username,256);
-   n = read(sock,username,255);
-   // printf("%d\n",n);
-   if (n < 0) error("ERROR reading from socket");
+
+   n = readsock(sock,username); username[n-1] = '\0';
    printf("Username provided : %s\n",username);
-   username[n-1] = '\0';
-   // printf("%lu\n",strlen(username));
 
-   bzero(password,256);
-   n = read(sock,password,255); if (n < 0) error("ERROR reading from socket");
+   n = readsock(sock,password); password[n-1] = '\0';
    printf("Password provided : %s\n",password);
-   password[n-1] = '\0';
 
 
-   FILE * fp;
-   fp = fopen("user_pass","r");
-   fscanf(fp, "%s %s",name,pass);
-   // printf("%s %s\n",name,pass);
+   //Reading username and password from file user_pass
+   FILE * fp = fopen("user_pass","r"); fscanf(fp, "%s %s",name,pass);
+   printf("%s %s\n",name,pass);
 
    if (strcmp(username,name) == 0 && strcmp(password,pass) == 0 ){
+
+     n = write(sock,"granted",7); if (n < 0) error("ERROR writing to socket");
      printf("%s authenticated!\n",username);
-     n = write(sock,"Logged In!",18); if (n < 0) error("ERROR writing to socket");
+     char message[11]= "Logged In!"; writesock(sock,message);
 
-
-     bzero(buffer,256);
-     n = read(sock,buffer,255);
-     printf("Query string is %s\n",buffer );
-     results(buffer);
-     // printf("%s\n",buffer);
-     n = write(sock,buffer,256); if (n < 0) error("ERROR writing to socket");
-
-
+     readsock(sock,buffer); // Reading Input string from Client
+     printf("%s : %s\n",username, buffer );
+     results(buffer); //process the string
+     printf("Server : %s\n",buffer );
+     writesock(sock,buffer); //Processed string sent to client.
 
    }
+
    else{
-     printf("Authentication failed! Try Again\n");
+     n = write(sock,"refused",strlen(buffer)); if (n < 0) error("ERROR writing to socket");
+     printf("%s failed to authenticate!\n",username);
 
    }
 }
