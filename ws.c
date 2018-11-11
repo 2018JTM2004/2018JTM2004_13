@@ -83,8 +83,7 @@ int main(int argc, char *argv[])
              exit(0);
          }
          else close(newsockfd);
-
-     }
+       }
      return 0;
 }
 void results(char s[]){
