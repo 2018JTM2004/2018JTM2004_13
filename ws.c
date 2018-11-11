@@ -101,7 +101,7 @@ void dostuff (int sock)
    char buffer[256],username[256],password[256];
    char name[10],pass[10];
 
-
+   auth:
    n = readsock(sock,username); username[n-1] = '\0';
    printf("Username provided : %s\n",username);
 
@@ -115,21 +115,22 @@ void dostuff (int sock)
 
    if (strcmp(username,name) == 0 && strcmp(password,pass) == 0 ){
 
-     n = write(sock,"granted",7); if (n < 0) error("ERROR writing to socket");
+     n = write(sock,"granted",strlen("granted")); if (n < 0) error("ERROR writing to socket");
      printf("%s authenticated!\n",username);
      char message[11]= "Logged In!"; writesock(sock,message);
-
-     readsock(sock,buffer); // Reading Input string from Client
-     printf("%s : %s\n",username, buffer );
-     results(buffer); //process the string
-     printf("Server : %s\n",buffer );
-     writesock(sock,buffer); //Processed string sent to client.
-
+     while(1){
+       readsock(sock,buffer); // Reading Input string from Client
+       printf("%s : %s\n",username, buffer );
+       results(buffer); //process the string
+       printf("Server : %s\n",buffer );
+       writesock(sock,buffer); //Processed string sent to client.
+    }
    }
 
    else{
-     n = write(sock,"refused",strlen(buffer)); if (n < 0) error("ERROR writing to socket");
+     n = write(sock,"refused",strlen("refused")); if (n < 0) error("ERROR writing to socket");
      printf("%s failed to authenticate!\n",username);
+     goto auth;
 
    }
 }

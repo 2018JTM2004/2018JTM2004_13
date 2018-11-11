@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
         error("ERROR connecting");
 
     //Username and Password Section
+    auth:
     printf("Username : ");
     readstdin(buffer);
     writesock(sockfd,buffer); //Username sent
@@ -72,17 +73,29 @@ int main(int argc, char *argv[])
     readstdin(buffer);
     writesock(sockfd,buffer); //Password sent
 
-    readsock(sockfd,buffer);
-    printf("%s\n",buffer);
-    
-    readsock(sockfd,buffer);printf("%s\n",buffer);//Print successful login message.
+    readsock(sockfd,buffer); printf("%s\n",buffer);//Check login status.
 
+    if (strcmp(buffer,"granted") == 0){
 
-    printf("Input Query : ");
-    readstdin(buffer);
-    writesock(sockfd,buffer); //Input Query sent
-    readsock(sockfd,buffer);
-    printf("Processed Query : %s",buffer);
+        readsock(sockfd,buffer);printf("%s\n",buffer);//Print successful login message.
+
+        while (1) {
+          printf("Input Query : ");
+          readstdin(buffer); writesock(sockfd,buffer); //Input Query sent
+          readsock(sockfd,buffer);
+          printf("Processed Query : %s",buffer);
+        }
+
+    }
+
+    else if(strcmp(buffer,"refused") == 0){
+        printf("Invalid Credentials!\n");
+        goto auth;
+
+    }
+    else{
+      printf("Something went terribly wrong. Restart Client and Server.\n" );
+    }
 
     return 0;
 }
