@@ -1,6 +1,5 @@
-CC=gcc
-make: server.out client.out
-client.out: 
-	$(CC) -o client.out wc2.c 
+all: server.out client.out
 server.out:
-	$(CC) -o server.out ws2.c 
+	gcc -o s server.c
+client.out:
+	gcc -o c client.c
