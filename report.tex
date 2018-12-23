@@ -11,13 +11,13 @@
 
 \author{\textbf{Anshuman Singh} \\ \textbf{2018JTM2004}\\ \textbf{2018-19}}
 \date{}
-\title{\textbf{Assignment-3\\ELP- 718 Telecom Software Laboratory}}
+\title{\textbf{Assignment-13\\ELP- 718 Telecom Software Laboratory}}
 
 \begin{document}
 	\maketitle
 	
 	\begin{center}
-	\noindent \textbf{A report presented for the assignment on\\ }
+	\noindent \textbf{A report presented for the assignment on\\ Socket Programming in C}
 	\vspace{1cm}
 	
 	\begin{figure}[h]
@@ -28,7 +28,7 @@
 	\end{figure}
 	\vspace{1.5cm}
 	
-	\textbf{Bharti School\\of\\Telecommunication Technology and Management\\IIT DELHI, Delhi\\September 6, 2018}
+	\textbf{Bharti School\\of\\Telecommunication Technology and Management\\IIT DELHI, Delhi\\Novembar 12, 2018}
 	
 	\end{center}
 	
@@ -41,137 +41,210 @@
 	
 	
 		\subsection{Problem Statement}
-		
-			\begin{enumerate}
-				\item 
-				\item 
-				\item 
-				\item  
-				\begin{enumerate}
-					\item 
-					\item 
-				\end{enumerate}
-			\end{enumerate}
+		You’ve to design a simple client and server TCP communication using sockets.
+		\begin{enumerate}
+
+
+		\item Server before establishing connection with the client should ask client for credentials.If
+		valid (authenticate user\_id and password entered by the client) then allow connection
+		otherwise prompt client again for id and password.
+		\item After successful authentication, the client sends a string to server and the server change
+		the case of each alphabet and send it back to client.
+		\item The client take user input from console as to what string has to be sent.The returned
+		string is displayed underneath.
+		\item The communication continues on as long as server or client don’t close their sockets.
+		\item The different stages of TCP communication should be shown with corresponding
+		messages as well. You should also display error in case of failures.
+		\end{enumerate}		
 		
 		\subsection{Assumptions}
 		
 			\begin{itemize}
-				\item 
-				\item 
+				\item Credentials are stored in a file named user\_pass.
+				\item All processing is done at the server.
 			\end{itemize}
 		
-		\subsection{Algorithm and Implementation~\cite{}}
-		
+		\subsection{Algorithm and Implementation~\cite{1}~\cite{2}~\cite{3}}
+			\textbf{Server Side:}
 			\begin{itemize}
-				\item 
-				\item 
-			    \item 
-			    \item 
-			    \item 
-			    \item 
+				\item Create a socket file descriptor first.
+				\item Specify the address family as IPv4 and IP address as the IP of the system.
+			    \item Bind the socket to a port number.
+			    \item Listen for connections from the clients.
+			    \item Now accept connections from clients and store their socket descriptors.
+			    \item Ask for credentials from the client.
+			    \item Authenticate or ask again for credentials.
+			    \item Create a child process using fork for each new connection.
+			    \item Create a function to receive the input string from the user.
+			    \item Then call the function written to process the query.
+			    \item Return the query and ask again for the next query.
 			\end{itemize}
-		
+			\textbf{Client Side:}
+			\begin{itemize}
+				\item Create a socket file descriptor first.
+				\item Specify the address family as IPv4 and IP address as the IP of the system.
+				\item Bind to the port number on which server is running.
+				\item Connect to server using the port number and address family specified.
+				\item Provide credentials.
+				\item Keep asking for query from user and process it.
+				\item Re-enter the query for processing until quit is pressed.
+			\end{itemize}			
 		\subsection{Flow Chart}
 		
 			\begin{figure}[h!]
 				\centering
 				\caption{Flow Chart for Figure 1}
-			%	\includegraphics[scale=.6]{}
+				\includegraphics[scale=.4]{flow.png}
 			\end{figure}
 		
 		\subsection{Input and Output Format}
 		
 			\begin{itemize}
-				\item Input Format:\\
-				\item Output Format:\\ 
+				\item \textbf{Client Interface example(on connection)}:\\
+				Please Enter Username: “xyz”
+\\
+				Please Enter Password: “4567”
+\\
+				Enter the string: HelLo (if credentials are valid)
+\\
+				Reply from server : hELlO
+\\
+				Enter the string :
+				\item \textbf{Server Interface example}:\\ 
+				Validate the credentials
+\\
+				String received : HelLo
+\\
+				Replied string : hELlO
 			\end{itemize}
 		
 		\subsection{Screenshots}
 		
 			\begin{figure}[h!]
 				\centering
-				\caption{Terminal Output of Problem 1}
-				%\includegraphics[scale=.5]{ps1_1.jpg}
+				\caption{Terminal Output of Server Assignment 1}
+				\includegraphics[scale=.6]{ps1_o_1.png}
 			\end{figure}
-	
+			\begin{figure}[h!]
+				\centering
+				\caption{Terminal Output of Client Assignment 1}
+				\includegraphics[scale=.6]{ps1_o_2.png}
+			\end{figure}
+
 	\section{Problem Statement-2}
 	
 		\subsection{Problem Statement}
-			\begin{figure}[h!]
-				\centering
-				%\includegraphics[scale=.6]{}
-			\end{figure}
+		You have to create a server capable of handling multiple clients up to 5 and ​rejecting more
+		than 5 connections ​using TCP communication sockets.Server should work in following phases.
+		\begin{enumerate}
+		\item Server before establishing connection with the client should ask client for credentials.If
+		valid (authenticate user\_id and password entered by the client) then allow connection
+		otherwise prompt client again for id and password.
+		\item After successful authentication ,conversation should start between clients and
+		server.Store the chat history between server and clients in a file “chat.txt” along with the
+		timestamp ( containing date and time )adjacent to the chat string.
+		\item One message send by a client should be broadcasted to all clients.
+		\item Before broadcasting the message server modify the message send by client by adding
+		prefix to the message.
+				\end{enumerate}
 			
-			\begin{enumerate}
-				\item 
-				\item 
-				\item 
-				\item 
-				\item 
-			\end{enumerate}
 		
 		\subsection{Assumptions}
 		
 			\begin{itemize}
-				\item 
-				\item 
+				\item Credentials are stored in a file named user\_pass.
+				\item Chat history gets stored in a file named chat\_history.
 			\end{itemize}
 		
-		\subsection{Algorithm and Implementation~\cite{}}
-		
+		\subsection{Algorithm and Implementation~\cite{1}~\cite{2}~\cite{3}}
+			\textbf{Server Side:}
 			\begin{itemize}
-			\item 
-			\item 
-			\item 
-			\item 
+				\item Create a socket file descriptor first.
+				\item Specify the address family as IPv4 and IP address as the IP of the system.
+				\item Bind the socket to a port number.
+				\item Listen for connections from the clients.
+				\item Now accept connections from clients and store their socket descriptors.
+				\item Ask for credentials from the client.
+				\item Authenticate or ask again for credentials.
+				\item Keep checking for data from all clients.
+				\item When data is present broadcast it to all the clients along with prefix.
+				\item Store the chat history in a file.
+				\item When quit is given as input quit the client program.
 			\end{itemize}
-		
+			\textbf{Client Side:}
+			\begin{itemize}
+				\item Create a socket file descriptor first.
+				\item Specify the address family as IPv4 and IP address as the IP of the system.
+				\item Bind to the port number on which server is running.
+				\item Connect to server using the port number and address family specified.
+				\item Provide credentials.
+				\item Enter message to broadcast until quit is given.
+
+			\end{itemize}			
+		\newpage
 		\subsection{Flow Chart}
 		
 			\begin{figure}[h!]
 				\centering
-				\caption{Flow Chart of Problem 2}
-				%\includegraphics[scale=.3]{ps2_f1.png}
+				\caption{Terminal Output of Server Assignment 2}
+				\includegraphics[scale=.55]{flow_2.png}
 			\end{figure}
-		
 		
 		\subsection{Input and Output Format}
-			\textbf{Input Format:}
+			\textbf{Client interface example:}
 			\begin{itemize}
-				\item 
-				\item 
+				\item Please Enter Username: “abc”
+				\item Please Enter Password: “1234”
+				\item Received String: Valid/Enter Credentials Again
 			 
 			\end{itemize}
-			\textbf{Output Format:}
+			\textbf{Server Interface example(on connection):}
 			\begin{itemize}
-				\item 
-				\item 
+				\item ./server.out xyz\_
+
+				\item  xyz\_ - prefix
 				
 			\end{itemize}
+
 		\subsection{Screenshots}
-		
 			\begin{figure}[h!]
 				\centering
-				\caption{Terminal Output of Problem 2}
-				%\includegraphics[scale=.5]{ps2_1.jpg}
+				\caption{Terminal Output of Server Assignment 2}
+				\includegraphics[scale=.55]{ps2_o_1.png}
 			\end{figure}
-		
+			\begin{figure}[h!]
+				\centering
+				\caption{Terminal Output of Client Assignment 2}
+				\includegraphics[scale=.55]{ps2_o_2.png}
+			\end{figure}
+	\newpage
 	\section{Appendix}
 	
-	
-		\subsection{Code for ps1}
+		\definecolor{mygreen}{HTML}{087012}
+		\definecolor{mygray}{HTML}{7e7f81}
+		\definecolor{mymauve}{HTML}{cb5be2}
 		
-			\begin{verbatim}
-			\end{verbatim}
-			%\lstinputlisting[language]{}
+		\lstset{
+			language=C,
+			backgroundcolor=\color{white}, 
+			basicstyle=\footnotesize,        % size of fonts
+			breaklines=true,                 % automatic line breaking
+			captionpos=b,                  
+			commentstyle=\color{mygreen},    % comment style
+			keywordstyle=\color{blue},       % keyword style
+			stringstyle=\color{mymauve},     % string literal style
+		}
+		\subsection{Code for ps1\_s}
+			\lstinputlisting[]{ps1_s.c}
+		\subsection{Code for ps1\_c}
+			\lstinputlisting[]{ps1_c.c}
+		\subsection{Code for ps2\_s}
+			\lstinputlisting[]{ps2_s.c}
+		\subsection{Code for ps2\_c}
+			\lstinputlisting[]{ps2_s.c}
 		
-		\subsection{Code for ps2}
-		
-			\begin{verbatim}
-			
-			\end{verbatim}
-			%\lstinputlisting[language]{}
-		
+
+
 		\bibliographystyle{plain}
 		\bibliography{report.bib}
 
